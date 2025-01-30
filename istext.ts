@@ -30,8 +30,8 @@ const checkByteContent = (filepath: string): boolean => {
       }
     }
 
-    // False if more than 5% of the file is non-text
-    return (nonTextCount / sampleSize) < 0.05
+    // False if more than 1% of the file is non-text
+    return (nonTextCount / sampleSize) < 0.01
   } catch (error) {
     console.error('Error during byte check:', error)
     return false
