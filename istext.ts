@@ -1,18 +1,5 @@
 import fs from 'fs'
-import { fileTypeFromFile } from 'file-type'
 
-// Check if MIME type includes text/
-const checkMimeType = async (filepath: string): Promise<boolean> => {
-  try {
-    const fileType = await fileTypeFromFile(filepath)
-    return fileType ? fileType.mime.startsWith('text/') : false
-  } catch (error) {
-    console.error('Error during MIME check:', error)
-    return false
-  }
-}
-
-// Start byte check to see if file has any weird characters
 const checkByteContent = (filepath: string): boolean => {
   try {
     const buffer = fs.readFileSync(filepath)
@@ -21,7 +8,7 @@ const checkByteContent = (filepath: string): boolean => {
     const sampleSize = buffer.length
     let nonTextCount = 0
 
-    // Count the non-text chars in the file
+    // Count the unprintable chars in the file
     for (let i = 0; i < sampleSize; i++) {
       const byte = buffer[i]
       // Check for unprintable chars (not text)
@@ -30,7 +17,7 @@ const checkByteContent = (filepath: string): boolean => {
       }
     }
 
-    // False if more than 1% of the file is non-text
+    // False if more than 1% of the file is unprintable
     return (nonTextCount / sampleSize) < 0.01
   } catch (error) {
     console.error('Error during byte check:', error)
@@ -40,9 +27,5 @@ const checkByteContent = (filepath: string): boolean => {
 
 // Main function
 export const isTextFile = async (filepath: string): Promise<boolean> => {
-  const isMimeText = await checkMimeType(filepath)
-  if (isMimeText) return true
-
-  // If MIME check fails, do byte check
   return checkByteContent(filepath)
 }
